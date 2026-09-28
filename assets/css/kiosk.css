@@ -1,3 +1,4 @@
+[hidden]{display:none!important}
 
 :root{
   color-scheme:light;
@@ -193,4 +194,26 @@ body.no-cursor,body.no-cursor *{cursor:none!important}
 .offline{flex:none;background:#fff4df;color:#6b4a00;padding:14px 56px;font-size:20px;display:none}
 .offline.is-on{display:block}
 
+/* Team search + on-screen keyboard */
+.search{height:84px;display:flex;align-items:center;gap:18px;padding:0 20px 0 28px;background:#fff;border:2px solid var(--grey-2);border-radius:42px;font-size:28px;text-align:left}
+.search svg{width:36px;height:36px;flex:none;fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round}
+.search.is-on{border-color:var(--green);box-shadow:0 0 0 4px var(--mint-2)}
+.search__q{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600;color:var(--ink)}
+.search__q:empty::before{content:"Search team or player name";font-weight:500;color:var(--faint)}
+.search.is-on .search__q::after{content:"";display:inline-block;width:3px;height:34px;margin-left:3px;vertical-align:-6px;background:var(--green);animation:pulse 1s steps(1) infinite}
+.search__clear{height:56px;padding:0 22px;border-radius:28px;background:var(--grey);font-size:22px;font-weight:700;display:inline-flex;align-items:center}
+.search-count{margin:0 0 16px;font-size:22px;color:var(--muted);font-weight:600}
+.team-grid mark,.search-count mark{background:var(--mint);color:inherit;border-radius:4px;padding:0 2px}
+.kbd{flex:none;display:none;flex-direction:column;gap:12px;background:#dde3dc;padding:20px 20px 24px;border-top:1px solid var(--grey-2)}
+.kbd.is-on{display:flex}
+.kbd__row{display:flex;gap:10px;justify-content:center}
+.key{flex:1 1 0;max-width:96px;height:96px;border-radius:12px;background:#fff;font-size:34px;font-weight:600;box-shadow:0 2px 0 var(--grey-2);display:grid;place-items:center}
+.key:active{background:var(--mint-2)}
+.key svg{width:40px;height:40px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}
+.key--grey{background:#c7cfc6}
+.key--wide2{flex:1.6 1 0;max-width:170px;font-size:26px}
+.key--space{flex:4 1 0;max-width:none;font-size:26px}
+.key--act{background:var(--green);color:#fff}
+.find-team{margin-top:26px;height:80px;padding:0 34px;border-radius:40px;background:#fff;color:var(--forest);font-size:28px;font-weight:700;display:inline-flex;align-items:center;gap:16px}
+.find-team svg{width:34px;height:34px;fill:none;stroke:var(--green);stroke-width:2.4;stroke-linecap:round}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

@@ -167,14 +167,45 @@ function renderKnockout(){
     '<div><h3>Draw</h3><div class="bracket">'+col('Quarter finals',['qf1','qf2','qf3','qf4'])+col('Semi finals',['sf1','sf2'])+col('3rd / 4th',['bronze'])+col('Final',['final'],'bm--final')+'</div></div>'+
     '<div><h3>Qualifying standings</h3>'+tableHTML(all, q, true)+'<p class="note">Round-robin matches only.</p></div>';
 }
-function renderTeams(){
-  segs($('teams-toggle'), [{id:'all',name:'All'}].concat(CFG.groups), teamsTab, 'ttab');
-  const st = Object.fromEntries(standings(null).map(r => [r.team, r]));
-  $('teams-body').innerHTML = T.teams.filter(t => teamsTab==='all' || TEAM_GROUP[t.name]===teamsTab).map(t => { const r = st[t.name] || {W:0,L:0,P:0};
-    return '<button type="button" class="tcard" data-team="'+esc(t.name)+'"><span class="tcard__court">'+esc((CFG.groups.find(g=>g.id===TEAM_GROUP[t.name])||{}).name||'')+'</span>'+
-      '<span class="tcard__name">'+esc(t.name)+'</span><span class="tcard__players">'+t.players.map(esc).join('<br>')+'</span>'+
-      '<span class="tcard__rec num">'+r.W+'W '+r.L+'L</span></button>'; }).join('');
+let teamQuery = '', kbdOpen = false;
+const fold = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+function hl(text){
+  const q = fold(teamQuery).trim(); if (!q) return esc(text);
+  const i = fold(text).indexOf(q); if (i < 0) return esc(text);
+  return esc(text.slice(0,i))+'<mark>'+esc(text.slice(i,i+q.length))+'</mark>'+esc(text.slice(i+q.length));
 }
+function teamMatches(t){
+  const q = fold(teamQuery).trim(); if (!q) return true;
+  return [t.name].concat(t.players, [t.charity || '']).some(s => fold(s).includes(q));
+}
+function renderTeams(){
+  const searching = teamQuery.trim() !== '';
+  $('teams-toggle').hidden = searching || kbdOpen;
+  segs($('teams-toggle'), [{id:'all',name:'All'}].concat(CFG.groups), teamsTab, 'ttab');
+  $('team-q').textContent = teamQuery;
+  $('team-clear').hidden = !searching;
+  $('team-search').classList.toggle('is-on', kbdOpen);
+  $('kbd').classList.toggle('is-on', kbdOpen);
+  const st = Object.fromEntries(standings(null).map(r => [r.team, r]));
+  const list = T.teams.filter(t => searching ? teamMatches(t) : (teamsTab==='all' || TEAM_GROUP[t.name]===teamsTab));
+  const count = $('team-count');
+  count.hidden = !searching;
+  count.innerHTML = list.length ? list.length+' team'+(list.length===1?'':'s')+' matching “<mark>'+esc(teamQuery.trim())+'</mark>”' : '';
+  $('teams-body').innerHTML = list.map(t => { const r = st[t.name] || {W:0,L:0,P:0};
+    return '<button type="button" class="tcard" data-team="'+esc(t.name)+'"><span class="tcard__court">'+esc((CFG.groups.find(g=>g.id===TEAM_GROUP[t.name])||{}).name||'')+'</span>'+
+      '<span class="tcard__name">'+hl(t.name)+'</span><span class="tcard__players">'+t.players.map(hl).join('<br>')+'</span>'+
+      '<span class="tcard__rec num">'+r.W+'W '+r.L+'L</span></button>'; }).join('')
+    || (searching ? '<div class="empty" style="grid-column:1/-1">No team or player matches “'+esc(teamQuery.trim())+'”.<br>Check the spelling, or try part of a name.</div>' : '');
+}
+function typeKey(k){
+  if (k === 'back') teamQuery = teamQuery.slice(0,-1);
+  else if (k === 'clear') teamQuery = '';
+  else if (k === 'done') kbdOpen = false;
+  else if (teamQuery.length < 30) teamQuery += (teamQuery === '' || teamQuery.endsWith(' ')) ? k : k.toLowerCase();
+  renderTeams();
+  if (k !== 'done') $('teams-body').parentElement.scrollTop = 0;
+}
+function openSearch(){ kbdOpen = true; if (current !== 'teams') go('teams'); else renderTeams(); }
 function openTeam(name){
   const t = T.teams.find(x => x.name === name); if (!t) return;
   const r = standings(null).find(x => x.team === name) || {P:0,W:0,L:0,Diff:0,Pts:0};
@@ -243,14 +274,16 @@ function go(v){ current = v; document.querySelectorAll('.view').forEach(e => e.c
 function renderAll(){ if (!T.fixtures.length) return; RENDER[current](); if ($('attract').classList.contains('is-on') && !$('attract-card').innerHTML) $('attract-card').innerHTML = renderAttract()[0]; }
 function openSheet(html){ $('sheet-body').innerHTML = html; $('sheet-body').scrollTop = 0; $('sheet').classList.add('is-open'); $('sheet').setAttribute('aria-hidden','false'); }
 function closeSheet(){ $('sheet').classList.remove('is-open'); $('sheet').setAttribute('aria-hidden','true'); }
-function showAttract(){ closeSheet(); mapSel = null; go('home'); $('attract-card').innerHTML = renderAttract()[0]; attractIdx = 0; $('attract').classList.add('is-on'); clearInterval(attractTimer); attractTimer = setInterval(cycleAttract, 9000); }
+function showAttract(){ closeSheet(); mapSel = null; teamQuery = ''; kbdOpen = false; go('home'); $('attract-card').innerHTML = renderAttract()[0]; attractIdx = 0; $('attract').classList.add('is-on'); clearInterval(attractTimer); attractTimer = setInterval(cycleAttract, 9000); }
 function hideAttract(){ $('attract').classList.remove('is-on'); clearInterval(attractTimer); }
 let idleT = null;
 function bump(){ clearTimeout(idleT); idleT = setTimeout(showAttract, CFG.idleSeconds*1000); }
 
 $('stage').addEventListener('click', e => {
   if ($('attract').classList.contains('is-on')) { hideAttract(); bump(); return; }
-  const g = e.target.closest('[data-go]'); if (g) return go(g.dataset.go);
+  const key = e.target.closest('[data-key]'); if (key) return typeKey(key.dataset.key);
+  if (e.target.closest('#team-search') || e.target.closest('[data-find]')) return openSearch();
+  const g = e.target.closest('[data-go]'); if (g) { if (g.dataset.go !== 'teams') kbdOpen = false; return go(g.dataset.go); }
   if (e.target.closest('#brand')) return showAttract();
   if (e.target.closest('[data-close]')) return closeSheet();
   const rt = e.target.closest('[data-rtab]'); if (rt) { resultsTab = rt.dataset.rtab; return renderResults(); }
@@ -258,9 +291,16 @@ $('stage').addEventListener('click', e => {
   const tt = e.target.closest('[data-ttab]'); if (tt) { teamsTab = tt.dataset.ttab; return renderTeams(); }
   const cz = e.target.closest('.court-z'); if (cz) { mapSel = +cz.dataset.court; return renderMap(); }
   const cr = e.target.closest('.court-row'); if (cr) return openCourt(+cr.dataset.court);
-  const tm = e.target.closest('[data-team]'); if (tm) return openTeam(tm.dataset.team);
+  const tm = e.target.closest('[data-team]'); if (tm) { if (kbdOpen) { kbdOpen = false; renderTeams(); } return openTeam(tm.dataset.team); }
 });
 ['pointerdown','keydown','wheel'].forEach(ev => window.addEventListener(ev, bump, {passive:true}));
+window.addEventListener('keydown', e => {
+  if (current !== 'teams' || $('attract').classList.contains('is-on') || $('sheet').classList.contains('is-open')) return;
+  if (e.key === 'Backspace') { e.preventDefault(); typeKey('back'); }
+  else if (e.key === 'Escape') typeKey('clear');
+  else if (e.key === 'Enter') typeKey('done');
+  else if (/^[a-z0-9 ]$/i.test(e.key)) { kbdOpen = true; teamQuery += e.key; renderTeams(); }
+});
 document.addEventListener('contextmenu', e => { e.preventDefault(); });
 
 function fit(){ const s = Math.min(innerWidth/1080, innerHeight/1920); const st = $('stage');

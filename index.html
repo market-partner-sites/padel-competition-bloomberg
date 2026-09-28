@@ -27,6 +27,7 @@
         <h1 id="home-title">On court now</h1>
         <p>Padel Box Bermondsey · Thursday 2 July 2026</p>
         <div class="status-strip" id="home-status"></div>
+        <button type="button" class="find-team" data-find><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>Find your team</button>
       </div>
       <div class="body">
         <div id="home-champion"></div>
@@ -62,8 +63,16 @@
     </section>
 
     <section class="view" id="view-teams" aria-label="Teams">
-      <div class="view-head"><h2 class="view-title">Teams</h2><div class="segmented" id="teams-toggle"></div></div>
-      <div class="scroller"><div id="teams-body" class="team-grid"></div></div>
+      <div class="view-head"><h2 class="view-title">Teams</h2>
+        <button type="button" class="search" id="team-search" aria-label="Search by team or player name"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><span class="search__q" id="team-q"></span><span class="search__clear" data-key="clear" id="team-clear" hidden>Clear</span></button>
+        <div class="segmented" id="teams-toggle"></div></div>
+      <div class="scroller"><p class="search-count" id="team-count" hidden></p><div id="teams-body" class="team-grid"></div></div>
+      <div class="kbd" id="kbd" aria-label="On-screen keyboard">
+        <div class="kbd__row"><button type="button" class="key" data-key="Q">Q</button><button type="button" class="key" data-key="W">W</button><button type="button" class="key" data-key="E">E</button><button type="button" class="key" data-key="R">R</button><button type="button" class="key" data-key="T">T</button><button type="button" class="key" data-key="Y">Y</button><button type="button" class="key" data-key="U">U</button><button type="button" class="key" data-key="I">I</button><button type="button" class="key" data-key="O">O</button><button type="button" class="key" data-key="P">P</button></div>
+        <div class="kbd__row"><button type="button" class="key" data-key="A">A</button><button type="button" class="key" data-key="S">S</button><button type="button" class="key" data-key="D">D</button><button type="button" class="key" data-key="F">F</button><button type="button" class="key" data-key="G">G</button><button type="button" class="key" data-key="H">H</button><button type="button" class="key" data-key="J">J</button><button type="button" class="key" data-key="K">K</button><button type="button" class="key" data-key="L">L</button></div>
+        <div class="kbd__row"><button type="button" class="key" data-key="Z">Z</button><button type="button" class="key" data-key="X">X</button><button type="button" class="key" data-key="C">C</button><button type="button" class="key" data-key="V">V</button><button type="button" class="key" data-key="B">B</button><button type="button" class="key" data-key="N">N</button><button type="button" class="key" data-key="M">M</button><button type="button" class="key key--grey key--wide2" data-key="back" aria-label="Delete"><svg viewBox="0 0 24 24"><path d="M9 5h11v14H9l-6-7zM12 9l6 6M18 9l-6 6"/></svg></button></div>
+        <div class="kbd__row"><button type="button" class="key key--grey key--wide2" data-key="clear">Clear</button><button type="button" class="key" data-key="1">1</button><button type="button" class="key" data-key="2">2</button><button type="button" class="key" data-key="3">3</button><button type="button" class="key" data-key="4">4</button><button type="button" class="key" data-key="5">5</button><button type="button" class="key key--space" data-key=" ">Space</button><button type="button" class="key key--act key--wide2" data-key="done">Done</button></div>
+      </div>
     </section>
 
     <section class="view" id="view-map" aria-label="Court map">

@@ -14,7 +14,7 @@ Modelled on the BNEF Summit London kiosk.
   (5 group winners + 3 best runners-up).
 - **Results** — every played match, filter by court or knockout.
 - **Knockout** — the draw (QF → SF → 3rd place / Final) and qualifying table.
-- **Teams** — every pair; tap for their record and matches.
+- **Teams** — every pair; search by team or player name with the on-screen keyboard (also "Find your team" on Home); tap a team for its record and matches.
 - **Map** — court layout; tap a court for what's on.
 
 ## Where the scores come from

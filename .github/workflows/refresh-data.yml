@@ -1,0 +1,63 @@
+name: Refresh live tournament data
+
+# Keeps data/*.json fresh so the kiosk still has scores where the bbgevent.app
+# APIs can't be called from the browser (CORS). Runs on GitHub's servers, where
+# CORS doesn't apply. Note: GitHub runs scheduled jobs at best every 5 minutes
+# and often later, so on match day the live API (CORS allow-listed) is what
+# keeps scores current — this is the safety net.
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/refresh-data.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-data
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch live data
+        run: |
+          mkdir -p data
+          BASE='https://bbgevent.app/api/clients/bloomberg_padel/events/tournament_2026'
+          ok=0
+          fetch() {
+            url="$1"; out="$2"; tmp="$(mktemp)"
+            if curl -sSf --max-time 30 "$url" -o "$tmp" && jq -e 'type=="array"' "$tmp" >/dev/null 2>&1; then
+              mv "$tmp" "$out"; echo "Refreshed $out"; ok=$((ok+1))
+            else
+              echo "::warning::Failed to fetch or parse $url — keeping existing $out"; rm -f "$tmp"
+            fi
+          }
+          fetch "$BASE/agendas" data/agendas.json
+          fetch "$BASE/content-relationships" data/relationships.json
+          fetch "$BASE/content/entities" data/entities.json
+          fetch "$BASE/registrations?categoryType=Speaker" data/registrations.json
+          if [ "$ok" -eq 4 ]; then
+            printf '{"fetchedAt":"%s"}\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > data/meta.json
+          fi
+
+      - name: Commit changes if any
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/*.json
+          # meta.json changes every run; only commit when the tournament data itself changed
+          if git diff --cached --quiet -- data/agendas.json data/relationships.json data/entities.json data/registrations.json; then
+            git reset -q data/meta.json; echo "No data changes."
+          else
+            git commit -m "chore: refresh tournament data snapshot"
+            git push
+          fi

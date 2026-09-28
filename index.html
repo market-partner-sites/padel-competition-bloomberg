@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Padel Courtside</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="assets/css/kiosk.css">
+</head>
+<body>
+<div id="viewport">
+<div class="stage" id="stage">
+  <header class="topbar">
+    <button type="button" class="brand" id="brand" aria-label="Back to the welcome screen">
+      <span class="brand__word">Bloomberg</span><span class="brand__with">× Greenhouse Sports</span>
+    </button>
+    <div class="clock"><span class="clock__time num" id="clock-time">--:--</span><span class="clock__date" id="clock-date"></span></div>
+  </header>
+  <div class="offline" id="offline"></div>
+
+  <main class="views">
+    <section class="view is-active" id="view-home" aria-label="Home">
+      <div class="hero pattern">
+        <span class="eyebrow">Charity Padel Tournament</span>
+        <h1 id="home-title">On court now</h1>
+        <p>Padel Box Bermondsey · Thursday 2 July 2026</p>
+        <div class="status-strip" id="home-status"></div>
+      </div>
+      <div class="body">
+        <div id="home-champion"></div>
+        <div>
+          <div class="section-head"><h2>Courts</h2><span id="courts-meta"></span></div>
+          <div class="courts" id="home-courts"></div>
+        </div>
+        <div id="home-next-wrap">
+          <div class="section-head"><h2>Up next</h2></div>
+          <div class="next-list" id="home-next"></div>
+        </div>
+        <div class="tiles">
+          <button class="tile" type="button" data-go="standings"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span class="tile__title">Standings</span><span class="tile__sub">Five round-robin groups</span></button>
+          <button class="tile" type="button" data-go="knockout"><svg viewBox="0 0 24 24"><path d="M3 5h5v4H3zM3 15h5v4H3zM8 7h3v10H8M11 12h4M15 10h6v4h-6z"/></svg><span class="tile__title">Knockout</span><span class="tile__sub">Quarters to the final</span></button>
+          <button class="tile" type="button" data-go="map"><svg viewBox="0 0 24 24"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14"/></svg><span class="tile__title">Court map</span><span class="tile__sub">Find your court</span></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-standings" aria-label="Standings">
+      <div class="view-head"><h2 class="view-title">Standings</h2><div class="segmented" id="group-toggle"></div></div>
+      <div class="scroller"><div id="standings-body" class="stack"></div></div>
+    </section>
+
+    <section class="view" id="view-results" aria-label="Results">
+      <div class="view-head"><h2 class="view-title">Results</h2><div class="segmented" id="results-toggle"></div></div>
+      <div class="scroller"><div id="results-body"></div></div>
+    </section>
+
+    <section class="view" id="view-knockout" aria-label="Knockout">
+      <div class="view-head"><h2 class="view-title">Knockout</h2></div>
+      <div class="scroller"><div id="knockout-body" class="stack"></div></div>
+    </section>
+
+    <section class="view" id="view-teams" aria-label="Teams">
+      <div class="view-head"><h2 class="view-title">Teams</h2><div class="segmented" id="teams-toggle"></div></div>
+      <div class="scroller"><div id="teams-body" class="team-grid"></div></div>
+    </section>
+
+    <section class="view" id="view-map" aria-label="Court map">
+      <div class="view-head"><h2 class="view-title">Court map</h2></div>
+      <div class="map-wrap">
+        <svg class="map" id="map-svg" viewBox="0 0 395 305" role="img" aria-label="Padel Box Bermondsey court layout"></svg>
+        <div class="zone-card" id="zone-card"><div class="hint"><span class="dot"></span>Tap a court to see what's on</div></div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="dock" aria-label="Sections">
+    <button type="button" class="dock__btn is-active" data-go="home"><svg viewBox="0 0 24 24"><path d="M3 11 12 4l9 7M5 10v10h5v-6h4v6h5V10"/></svg><span>Home</span></button>
+    <button type="button" class="dock__btn" data-go="standings"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Standings</span></button>
+    <button type="button" class="dock__btn" data-go="results"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM4 9h16M9 9v11"/></svg><span>Results</span></button>
+    <button type="button" class="dock__btn" data-go="knockout"><svg viewBox="0 0 24 24"><path d="M3 5h5v4H3zM3 15h5v4H3zM8 7h3v10H8M11 12h4M15 10h6v4h-6z"/></svg><span>Knockout</span></button>
+    <button type="button" class="dock__btn" data-go="teams"><svg viewBox="0 0 24 24"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21v-1a6 6 0 0 1 12 0v1M16 3.5a4 4 0 0 1 0 7.5M22 21v-1a6 6 0 0 0-4-5.6"/></svg><span>Teams</span></button>
+    <button type="button" class="dock__btn" data-go="map"><svg viewBox="0 0 24 24"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14"/></svg><span>Map</span></button>
+  </nav>
+
+  <div class="sheet" id="sheet" aria-hidden="true">
+    <div class="sheet__backdrop" data-close></div>
+    <div class="sheet__panel" role="dialog" aria-modal="true">
+      <div class="sheet__bar"><button type="button" class="sheet__close" data-close aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+      <div class="sheet__body" id="sheet-body"></div>
+    </div>
+  </div>
+
+  <div class="attract pattern" id="attract">
+    <div class="attract__top"><b>Bloomberg</b><span class="num" id="attract-clock"></span></div>
+    <div>
+      <span class="eyebrow">Bloomberg and Greenhouse Sports</span>
+      <h1 class="attract__title">Charity Padel Tournament</h1>
+      <div class="attract__sub">Thursday 2 July 2026 · Padel Box Bermondsey</div>
+      <div class="attract__card" id="attract-card"></div>
+    </div>
+    <div class="attract__touch"><span class="dot"></span>Touch anywhere for live scores, standings and the draw</div>
+  </div>
+</div>
+</div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/kiosk.js"></script>
+</body>
+</html>

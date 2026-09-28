@@ -57,3 +57,9 @@ Other URL options: `?view=standings|results|knockout|teams|map`, `?attract=1`,
 
 Serve it over http(s) — GitHub Pages, or `python3 -m http.server` locally —
 not from disk; browsers block `fetch()` of local JSON files.
+
+## After changing CSS or JS
+
+Bump the `?v=` number on the three `<link>`/`<script>` lines at the bottom and top
+of `index.html` (any new number, e.g. today's date and time). Browsers and the
+totem keep old copies of these files; a new number forces a fresh download.
